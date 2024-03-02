@@ -1,9 +1,25 @@
-import React from 'react'
+import Question from "@/components/forms/Question";
+import { getUserById } from "@/lib/actions/user.action";
+import { auth } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-const page = () => {
+const Page = async () => {
+  const {userId} = auth();
+  console.log(userId);
+  if (!userId) {
+    redirect("/sign-in");
+  }
+
+  const mongoUser = await getUserById({ userId });
+
   return (
-    <div>page</div>
-  )
-}
+    <div>
+      <h1 className="h1-bold text-dark100_light900">Ask a Question</h1>
+      <div className="mt-9">
+        <Question mongoUserId={JSON.stringify(mongoUser)} />
+      </div>
+    </div>
+  );
+};
 
-export default page
+export default Page;

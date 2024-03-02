@@ -5,55 +5,12 @@ import NoResult from "@/components/shared/NoResult";
 import LocalSearchbar from "@/components/shared/search/LocalSearchbar";
 import { Button } from "@/components/ui/button";
 import { HomePageFilters } from "@/constants/filters";
+import { getQuestions } from "@/lib/actions/question.action";
 import Link from "next/link";
-import React from "react";
 
-const Home = () => {
-  const questions = [
-    {
-      _id: "1",
-      title: "Cascading Deletes in SQL",
-      tags: [
-        { _id: "tag1", name: "database" },
-        { _id: "tag2", name: "sql" },
-      ],
-      author: {
-        _id: "author1",
-        name: "John Doe",
-        picture: "https://example.com/johndoe.jpg",
-      },
-      upvotes: 15,
-      views: 120,
-      answers: [
-        { answerId: "ans1", text: "You can use CASCADE constraints in SQL." },
-        { answerId: "ans2", text: "Consider using triggers for more control." },
-      ],
-      createdAt: new Date("2021-09-01T12:00:00.000Z"),
-    },
-    {
-      _id: "2",
-      title: "How to Center a Div",
-      tags: [
-        { _id: "tag3", name: "html" },
-        { _id: "tag4", name: "css" },
-      ],
-      author: {
-        _id: "author2",
-        name: "Adrian",
-        picture: "https://example.com/adrian.jpg",
-      },
-      upvotes: 20,
-      views: 150,
-      answers: [
-        {
-          answerId: "ans3",
-          text: "Use margin: auto for horizontal centering.",
-        },
-        { answerId: "ans4", text: "Flexbox and grid are also great options." },
-      ],
-      createdAt: new Date("2021-09-02T10:30:00.000Z"),
-    },
-  ];
+export default async function Home() {
+  const result = await getQuestions({});
+  console.log(result);
 
   return (
     <>
@@ -86,8 +43,8 @@ const Home = () => {
       <HomeFilters />
 
       <div className="mt-10 flex w-full flex-col gap-6">
-        {questions.length > 0 ? (
-          questions.map((question) => (
+        {result.questions.length > 0 ? (
+          result.questions.map((question) => (
             <QuestionCard
               key={question._id}
               _id={question._id}
@@ -111,6 +68,4 @@ const Home = () => {
       </div>
     </>
   );
-};
-
-export default Home;
+}
