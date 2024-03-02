@@ -10,7 +10,7 @@ import Link from "next/link";
 
 export default async function Home() {
   const result = await getQuestions({});
-  console.log(result.questions);
+  console.log(result?.questions);
 
   return (
     <>
@@ -43,7 +43,7 @@ export default async function Home() {
       <HomeFilters />
 
       <div className="mt-10 flex w-full flex-col gap-6">
-        {result.questions.length > 0 ? (
+      {result?.questions && result.questions.length > 0 ? (
           result.questions.map((question) => (
             <QuestionCard
               key={question._id}
