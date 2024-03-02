@@ -1,7 +1,5 @@
 "use client";
 
-import React, { useRef, useState } from "react";
-import { Editor } from "@tinymce/tinymce-react";
 import {
   Form,
   FormControl,
@@ -12,17 +10,27 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { createQuestion } from "@/lib/actions/question.action";
 import { QuestionValidation } from "@/lib/validations";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { Editor } from "@tinymce/tinymce-react";
+import Image from "next/image";
+import React, { useRef, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
-import Image from "next/image";
+import { Button } from "../ui/button";
+import { useRouter, usePathname } from "next/navigation";
 
 const type: any = "create";
 
-const Question = () => {
+interface Props {
+  mongoUserId: string;
+}
+
+const Question = ({ mongoUserId }: Props) => {
+  const router = useRouter();
+  const pathname = usePathname();
   const editorRef = useRef(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -35,15 +43,19 @@ const Question = () => {
     },
   });
 
-  function onSubmit(values: z.infer<typeof QuestionValidation>) {
+  async function onSubmit(values: z.infer<typeof QuestionValidation>) {
     setIsSubmitting(true);
     try {
-      // make async call to api -> database
-      // contain all form data
+      await createQuestion({
+        title: values.title,
+        content: values.explanation,
+        tags: values.tags,
+        author: JSON.parse(mongoUserId),
+        path: pathname,
+      });
 
-      // navigate to home
+      router.push("/");
     } catch (error) {
-      
     } finally {
       setIsSubmitting(false);
     }
@@ -81,6 +93,7 @@ const Question = () => {
     const newTags = field.value.filter((t: string) => t !== tag);
     form.setValue("tags", newTags);
   };
+
 
   return (
     <Form {...form}>
@@ -122,6 +135,8 @@ const Question = () => {
                     // @ts-ignore
                     editorRef.current = editor;
                   }}
+                  onBlur={field.onBlur}
+                  onEditorChange={(content) => field.onChange(content)}
                   initialValue=""
                   init={{
                     height: 350,
